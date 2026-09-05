@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 interface PrivateRouteProps {
-  rolesPermitidos?: Array<'superadmin' | 'admin' | 'usuario'>;
+  rolesPermitidos?: Array<'superadmin' | 'bombero'>;
 }
 
 export default function PrivateRoute({ rolesPermitidos }: PrivateRouteProps) {

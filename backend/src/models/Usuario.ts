@@ -1,6 +1,6 @@
 import pool from '../config/database';
 
-export type Rol = 'superadmin' | 'admin' | 'usuario';
+export type Rol = 'superadmin' | 'bombero';
 
 export interface Usuario {
   id: number;

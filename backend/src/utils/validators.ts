@@ -15,5 +15,9 @@ export function validatePhoneNumber(phone: string): boolean {
 }
 
 export function validateRol(rol: string): boolean {
-  return ['superadmin', 'admin', 'usuario'].includes(rol);
+  return ['superadmin', 'bombero'].includes(rol);
+}
+
+export function validateMotivo(motivo: string): boolean {
+  return ['broma', 'falsa_alarma', 'dato_erroneo', 'otro'].includes(motivo);
 }
