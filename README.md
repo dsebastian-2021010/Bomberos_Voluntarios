@@ -22,6 +22,7 @@ Bomberos_Voluntarios/
 ## Requisitos previos
 
 - Node.js 18+
+- [pnpm](https://pnpm.io/installation) 9+ (gestor de paquetes del proyecto; instálalo con `corepack enable && corepack prepare pnpm@10.33.0 --activate` — corepack viene incluido con Node.js 18+)
 - PostgreSQL 13+
 - Cuenta SMTP (Gmail App Password, SendGrid, Mailtrap, etc.)
 
@@ -37,10 +38,10 @@ psql -U postgres -d bomberos_db -f backend/sql/schema.sql
 ```bash
 cd backend
 cp .env.example .env   # completa tus credenciales de DB, JWT y SMTP
-npm install
-npm run build
-npm run seed            # crea el SuperAdmin inicial (revisa la consola para la contraseña)
-npm run dev              # http://localhost:3000
+pnpm install
+pnpm run build
+pnpm run seed            # crea el SuperAdmin inicial (revisa la consola para la contraseña)
+pnpm run dev              # http://localhost:3000
 ```
 
 ## 3. Frontend
@@ -48,8 +49,8 @@ npm run dev              # http://localhost:3000
 ```bash
 cd frontend
 cp .env.example .env    # define VITE_API_URL si es distinto de http://localhost:3000/api
-npm install
-npm run dev               # http://localhost:5173
+pnpm install
+pnpm run dev               # http://localhost:5173
 ```
 
 ## Con Docker Compose

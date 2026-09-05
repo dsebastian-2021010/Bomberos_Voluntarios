@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "API de gestión de contactos - Bomberos Voluntarios",
   "main": "dist/app.js",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "start": "node dist/app.js",
     "dev": "nodemon --watch src -e ts --exec ts-node src/app.ts",
