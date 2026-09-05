@@ -7,7 +7,7 @@ import { apiLimiter } from './middlewares/rateLimiter';
 
 import authRoutes from './routes/auth';
 import usuariosRoutes from './routes/usuarios';
-import numerosRoutes from './routes/numeros';
+import llamadasRoutes from './routes/llamadas';
 
 const app = express();
 
@@ -30,7 +30,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuariosRoutes);
-app.use('/api/numeros', numerosRoutes);
+app.use('/api/llamadas', llamadasRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

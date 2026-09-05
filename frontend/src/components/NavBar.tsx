@@ -30,7 +30,7 @@ export default function NavBar() {
             </span>
             <div className="leading-tight">
               <p className="text-sm font-bold text-white">Bomberos Voluntarios</p>
-              <p className="text-xs text-ink-200">Gestión de Contactos</p>
+              <p className="text-xs text-ink-200">Registro de Llamadas Falsas</p>
             </div>
           </div>
 
@@ -44,7 +44,7 @@ export default function NavBar() {
 
           <div className="hidden items-center gap-2 md:flex">
             <NavLink to="/dashboard" className={linkClase}>
-              Números
+              Llamadas
             </NavLink>
             {usuario?.rol === 'superadmin' && (
               <NavLink to="/usuarios" className={linkClase}>

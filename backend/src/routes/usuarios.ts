@@ -8,7 +8,7 @@ const router = Router();
 
 router.use(autenticar);
 
-router.get('/', autorizar('superadmin', 'admin'), usuarioController.listar);
+router.get('/', autorizar('superadmin'), usuarioController.listar);
 router.post('/', autorizar('superadmin'), crearUsuarioLimiter, usuarioController.crear);
 router.put('/:id', autorizar('superadmin'), usuarioController.actualizar);
 router.delete('/:id', autorizar('superadmin'), usuarioController.eliminar);

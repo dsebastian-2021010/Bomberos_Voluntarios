@@ -1,24 +1,26 @@
 import { useEffect, useState, useCallback } from 'react';
-import AgregarNumero from '../components/AgregarNumero';
-import ListaNumeros from '../components/ListaNumeros';
+import RegistrarLlamada from '../components/RegistrarLlamada';
+import ListaNumerosReportados from '../components/ListaNumerosReportados';
+import HistorialModal from '../components/HistorialModal';
 import ConfirmModal from '../components/ConfirmModal';
 import Toast from '../components/Toast';
-import * as numerosService from '../services/numeros';
-import { Numero } from '../services/numeros';
+import * as llamadasService from '../services/llamadas';
+import { NumeroReportado } from '../services/llamadas';
 import { obtenerMensajeError } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 
 export default function DashboardPage() {
   const { usuario } = useAuth();
-  const [numeros, setNumeros] = useState<Numero[]>([]);
+  const [numeros, setNumeros] = useState<NumeroReportado[]>([]);
   const [cargando, setCargando] = useState(true);
-  const [aEliminar, setAEliminar] = useState<number | null>(null);
+  const [aBloquear, setABloquear] = useState<number | null>(null);
+  const [historialId, setHistorialId] = useState<number | null>(null);
   const [toast, setToast] = useState<{ mensaje: string; tipo: 'exito' | 'error' } | null>(null);
 
   const cargarNumeros = useCallback(async () => {
     setCargando(true);
     try {
-      const data = await numerosService.listarNumeros();
+      const data = await llamadasService.listarNumeros();
       setNumeros(data);
     } catch (err) {
       setToast({ mensaje: obtenerMensajeError(err), tipo: 'error' });
@@ -31,16 +33,26 @@ export default function DashboardPage() {
     cargarNumeros();
   }, [cargarNumeros]);
 
-  async function confirmarEliminar() {
-    if (aEliminar == null) return;
+  async function confirmarBloquear() {
+    if (aBloquear == null) return;
     try {
-      await numerosService.eliminarNumero(aEliminar);
-      setToast({ mensaje: 'Número eliminado correctamente', tipo: 'exito' });
+      await llamadasService.bloquearNumero(aBloquear);
+      setToast({ mensaje: 'Número bloqueado correctamente. Se notificó por correo.', tipo: 'exito' });
       cargarNumeros();
     } catch (err) {
       setToast({ mensaje: obtenerMensajeError(err), tipo: 'error' });
     } finally {
-      setAEliminar(null);
+      setABloquear(null);
+    }
+  }
+
+  async function handleDesbloquear(id: number) {
+    try {
+      await llamadasService.desbloquearNumero(id);
+      setToast({ mensaje: 'Número desbloqueado correctamente.', tipo: 'exito' });
+      cargarNumeros();
+    } catch (err) {
+      setToast({ mensaje: obtenerMensajeError(err), tipo: 'error' });
     }
   }
 
@@ -51,27 +63,35 @@ export default function DashboardPage() {
           Bienvenido, {usuario?.nombre?.split(' ')[0]}
         </h1>
         <p className="text-sm text-ink-400">
-          {usuario?.rol === 'usuario'
-            ? 'Aquí puedes gestionar tus números de contacto.'
-            : 'Panel de control de números de contacto de la institución.'}
+          Registro y bloqueo de números que reportan llamadas falsas o de broma.
         </p>
       </div>
 
-      <AgregarNumero
-        onCreado={cargarNumeros}
+      <RegistrarLlamada
+        onRegistrado={cargarNumeros}
         onExito={(m) => setToast({ mensaje: m, tipo: 'exito' })}
         onError={(m) => setToast({ mensaje: m, tipo: 'error' })}
       />
 
-      <ListaNumeros numeros={numeros} cargando={cargando} onEliminar={(id) => setAEliminar(id)} />
+      <ListaNumerosReportados
+        numeros={numeros}
+        cargando={cargando}
+        onBloquear={(id) => setABloquear(id)}
+        onDesbloquear={handleDesbloquear}
+        onVerHistorial={(id) => setHistorialId(id)}
+      />
 
-      {aEliminar != null && (
+      {aBloquear != null && (
         <ConfirmModal
-          titulo="Eliminar número"
-          mensaje="¿Estás seguro de que deseas eliminar este número de contacto? Esta acción no se puede deshacer."
-          onConfirmar={confirmarEliminar}
-          onCancelar={() => setAEliminar(null)}
+          titulo="Bloquear número"
+          mensaje="¿Estás seguro de que deseas bloquear este número? Quedará marcado como reincidente en llamadas falsas."
+          onConfirmar={confirmarBloquear}
+          onCancelar={() => setABloquear(null)}
         />
+      )}
+
+      {historialId != null && (
+        <HistorialModal numeroId={historialId} onCerrar={() => setHistorialId(null)} />
       )}
 
       {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={() => setToast(null)} />}

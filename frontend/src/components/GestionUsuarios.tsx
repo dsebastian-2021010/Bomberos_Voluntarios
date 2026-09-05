@@ -6,7 +6,7 @@ import ConfirmModal from './ConfirmModal';
 import Toast from './Toast';
 import { useAuth } from '../hooks/useAuth';
 
-const ROLES: Usuario['rol'][] = ['usuario', 'admin', 'superadmin'];
+const ROLES: Usuario['rol'][] = ['bombero', 'superadmin'];
 
 export default function GestionUsuarios() {
   const { usuario: usuarioActual } = useAuth();
@@ -17,7 +17,7 @@ export default function GestionUsuarios() {
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
-  const [rol, setRol] = useState<Usuario['rol']>('usuario');
+  const [rol, setRol] = useState<Usuario['rol']>('bombero');
   const [enviando, setEnviando] = useState(false);
 
   const cargar = useCallback(async () => {
@@ -42,7 +42,7 @@ export default function GestionUsuarios() {
       await usuariosService.crearUsuario({ nombre, email, rol });
       setNombre('');
       setEmail('');
-      setRol('usuario');
+      setRol('bombero');
       setToast({ mensaje: 'Usuario creado. Se envió la contraseña temporal por correo.', tipo: 'exito' });
       cargar();
     } catch (err) {

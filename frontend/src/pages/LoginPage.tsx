@@ -40,7 +40,7 @@ export default function LoginPage() {
               CVB
             </span>
             <h1 className="mt-4 text-center text-xl font-bold text-ink-900">Bomberos Voluntarios</h1>
-            <p className="text-center text-sm text-ink-400">Sistema de Gestión de Contactos</p>
+            <p className="text-center text-sm text-ink-400">Registro y Bloqueo de Llamadas Falsas</p>
           </div>
 
           <form onSubmit={handleSubmit} className="card space-y-4 p-6">

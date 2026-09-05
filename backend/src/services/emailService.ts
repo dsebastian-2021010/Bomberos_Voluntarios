@@ -67,12 +67,10 @@ async function enviarConReintentos(mensaje: EnvioEmail, intento = 0): Promise<vo
   }
 }
 
-export function notificarNuevoNumero(data: {
+export function notificarNumeroBloqueado(data: {
   numeroTelefono: string;
-  nombrePropietario?: string | null;
-  descripcion?: string | null;
-  registradoPor: string;
-  usuarioId: number;
+  totalReportes: number;
+  bloqueadoPor: string;
 }): void {
   if (config.smtp.adminEmails.length === 0) return;
 
@@ -84,16 +82,15 @@ export function notificarNuevoNumero(data: {
         <span style="color:#F4B400; font-weight:bold; font-size:18px;">Bomberos Voluntarios</span>
       </div>
       <div style="border:1px solid #eee; border-top:4px solid #C8102E; padding:24px;">
-        <h2 style="color:#C8102E; margin-top:0;">Nuevo Número de Contacto Registrado</h2>
-        <p>Se ha registrado un nuevo número de celular en el sistema:</p>
+        <h2 style="color:#C8102E; margin-top:0;">Número Bloqueado por Llamadas Falsas</h2>
+        <p>Se ha marcado un número como <strong>bloqueado</strong> en el sistema de registro de llamadas:</p>
         <table style="width:100%; border-collapse: collapse;">
           <tr><td style="padding:6px 0;"><strong>📞 Número:</strong></td><td>${data.numeroTelefono}</td></tr>
-          <tr><td style="padding:6px 0;"><strong>👤 Propietario:</strong></td><td>${data.nombrePropietario || '-'}</td></tr>
-          <tr><td style="padding:6px 0;"><strong>📝 Descripción:</strong></td><td>${data.descripcion || '-'}</td></tr>
+          <tr><td style="padding:6px 0;"><strong>🚨 Total de reportes:</strong></td><td>${data.totalReportes}</td></tr>
           <tr><td style="padding:6px 0;"><strong>📅 Fecha:</strong></td><td>${fecha}</td></tr>
         </table>
-        <p style="margin-top:16px;">Registrado por: <strong>${data.registradoPor}</strong> (Usuario ID: ${data.usuarioId})</p>
-        <p>Por favor verifica que la información es correcta.</p>
+        <p style="margin-top:16px;">Bloqueado por: <strong>${data.bloqueadoPor}</strong></p>
+        <p>Este número queda marcado internamente como reincidente en llamadas de broma o falsa alarma.</p>
       </div>
       <p style="text-align:center; color:#888; font-size:12px; margin-top:16px;">Sistema de Bomberos Voluntarios</p>
     </div>
@@ -101,7 +98,7 @@ export function notificarNuevoNumero(data: {
 
   enviarConReintentos({
     destinatarios: config.smtp.adminEmails,
-    asunto: '[NOTIFICACIÓN] Nuevo Número de Contacto Registrado',
+    asunto: '[ALERTA] Número Bloqueado por Llamadas Falsas',
     html,
   });
 }
@@ -118,7 +115,7 @@ export function enviarCredencialesIniciales(data: {
       </div>
       <div style="border:1px solid #eee; border-top:4px solid #C8102E; padding:24px;">
         <h2 style="color:#C8102E; margin-top:0;">Bienvenido(a), ${data.nombre}</h2>
-        <p>Se ha creado una cuenta para ti en el Sistema de Gestión de Contactos.</p>
+        <p>Se ha creado una cuenta para ti en el Sistema de Registro de Llamadas Falsas.</p>
         <p><strong>Correo:</strong> ${data.email}<br/>
            <strong>Contraseña temporal:</strong> ${data.passwordTemporal}</p>
         <p>Por seguridad, cambia tu contraseña en tu primer inicio de sesión.</p>

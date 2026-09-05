@@ -1,6 +1,6 @@
-# Bomberos Voluntarios — Sistema de Gestión de Contactos
+# Bomberos Voluntarios — Registro y Bloqueo de Llamadas Falsas
 
-Sistema seguro para la gestión centralizada de números telefónicos de contacto de los Bomberos Voluntarios, con autenticación JWT, roles administrativos y notificaciones por correo. La interfaz usa la paleta de colores institucional (rojo, negro y dorado) de la página oficial de Bomberos Voluntarios Guatemala.
+Sistema para que el personal de Bomberos Voluntarios registre números de teléfono que reportan llamadas falsas, de broma o con información errónea, lleve el historial de cada número y pueda marcarlo como bloqueado (una marca interna en el sistema, no una integración con la central telefónica). Incluye autenticación JWT, roles administrativos y notificaciones por correo. La interfaz usa la paleta de colores institucional (rojo, negro y dorado) de la página oficial de Bomberos Voluntarios Guatemala.
 
 ## Estructura del proyecto
 
@@ -13,11 +13,18 @@ Bomberos_Voluntarios/
 
 ## Roles del sistema
 
+Solo ingresan SuperAdmin y bomberos — no hay registro público.
+
 | Rol | Permisos |
 |---|---|
-| **SuperAdmin** | Crea/edita/elimina usuarios, cambia roles, ve todos los números |
-| **Admin** | Ve y gestiona todos los números telefónicos |
-| **Usuario** | Ve y gestiona únicamente sus propios números |
+| **SuperAdmin** | Todo lo de "bombero", más: crea/edita/elimina usuarios y cambia roles |
+| **Bombero** | Registra llamadas, ve el listado y el historial de cada número, bloquea/desbloquea números |
+
+## Modelo de datos
+
+- **`numeros_reportados`**: un registro por cada número de teléfono reportado. Guarda si está bloqueado, cuántas veces ha llamado (`total_reportes`) y quién/cuándo lo bloqueó.
+- **`reportes_llamada`**: cada llamada individual reportada (motivo, descripción, quién la registró). Varias de estas pueden apuntar al mismo número.
+- **"Bloquear" es una marca interna del sistema** — el personal ve una alerta de que ese número ya reportó llamadas falsas antes. No bloquea la llamada telefónica real; eso requeriría integración con la central telefónica/proveedor de telecomunicaciones, fuera del alcance de esta app.
 
 ## Requisitos previos
 

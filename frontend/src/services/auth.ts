@@ -4,7 +4,7 @@ export interface Usuario {
   id: number;
   nombre: string;
   email: string;
-  rol: 'superadmin' | 'admin' | 'usuario';
+  rol: 'superadmin' | 'bombero';
   estado?: boolean;
 }
 

@@ -1,16 +1,17 @@
 import { FormEvent, useState } from 'react';
-import * as numerosService from '../services/numeros';
+import * as llamadasService from '../services/llamadas';
+import { MOTIVOS, Motivo } from '../services/llamadas';
 import { obtenerMensajeError } from '../services/api';
 
-interface AgregarNumeroProps {
-  onCreado: () => void;
+interface RegistrarLlamadaProps {
+  onRegistrado: () => void;
   onError: (mensaje: string) => void;
   onExito: (mensaje: string) => void;
 }
 
-export default function AgregarNumero({ onCreado, onError, onExito }: AgregarNumeroProps) {
+export default function RegistrarLlamada({ onRegistrado, onError, onExito }: RegistrarLlamadaProps) {
   const [numeroTelefono, setNumeroTelefono] = useState('');
-  const [nombrePropietario, setNombrePropietario] = useState('');
+  const [motivo, setMotivo] = useState<Motivo>('broma');
   const [descripcion, setDescripcion] = useState('');
   const [enviando, setEnviando] = useState(false);
 
@@ -18,16 +19,16 @@ export default function AgregarNumero({ onCreado, onError, onExito }: AgregarNum
     e.preventDefault();
     setEnviando(true);
     try {
-      await numerosService.crearNumero({
+      await llamadasService.reportarLlamada({
         numeroTelefono: numeroTelefono.replace(/\D/g, ''),
-        nombrePropietario: nombrePropietario || undefined,
+        motivo,
         descripcion: descripcion || undefined,
       });
       setNumeroTelefono('');
-      setNombrePropietario('');
+      setMotivo('broma');
       setDescripcion('');
-      onExito('Número agregado correctamente. Se notificó por correo.');
-      onCreado();
+      onExito('Llamada registrada correctamente.');
+      onRegistrado();
     } catch (err) {
       onError(obtenerMensajeError(err));
     } finally {
@@ -37,7 +38,7 @@ export default function AgregarNumero({ onCreado, onError, onExito }: AgregarNum
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-4 p-5">
-      <h2 className="text-base font-bold text-ink-900">Agregar número de contacto</h2>
+      <h2 className="text-base font-bold text-ink-900">Registrar llamada falsa / broma</h2>
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="mb-1 block text-sm font-medium text-ink-700">Número de teléfono *</label>
@@ -51,28 +52,33 @@ export default function AgregarNumero({ onCreado, onError, onExito }: AgregarNum
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-ink-700">Propietario</label>
-          <input
-            type="text"
+          <label className="mb-1 block text-sm font-medium text-ink-700">Motivo *</label>
+          <select
+            required
             className="input-field"
-            placeholder="Nombre completo"
-            value={nombrePropietario}
-            onChange={(e) => setNombrePropietario(e.target.value)}
-          />
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value as Motivo)}
+          >
+            {MOTIVOS.map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium text-ink-700">Descripción</label>
           <input
             type="text"
             className="input-field"
-            placeholder="Ej. Motorista turno matutino"
+            placeholder="Detalles de la llamada"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
           />
         </div>
       </div>
       <button type="submit" disabled={enviando} className="btn-primary">
-        {enviando ? 'Guardando...' : '+ Agregar número'}
+        {enviando ? 'Registrando...' : '+ Registrar llamada'}
       </button>
     </form>
   );
