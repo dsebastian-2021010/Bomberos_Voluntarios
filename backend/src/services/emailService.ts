@@ -67,14 +67,18 @@ async function enviarConReintentos(mensaje: EnvioEmail, intento = 0): Promise<vo
   }
 }
 
-export function notificarNumeroBloqueado(data: {
+export function notificarBloqueoRegistrado(data: {
   numeroTelefono: string;
-  totalReportes: number;
-  bloqueadoPor: string;
+  razon: string;
+  reportadoPor: string;
+  fechaBloqueo: Date;
+  fechaExpiracion: Date;
 }): void {
   if (config.smtp.adminEmails.length === 0) return;
 
-  const fecha = new Date().toLocaleString('es-GT', { timeZone: 'America/Guatemala' });
+  const zonaHoraria = { timeZone: 'America/Guatemala' } as const;
+  const fechaBloqueo = data.fechaBloqueo.toLocaleString('es-GT', zonaHoraria);
+  const fechaExpiracion = data.fechaExpiracion.toLocaleString('es-GT', zonaHoraria);
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
@@ -82,15 +86,16 @@ export function notificarNumeroBloqueado(data: {
         <span style="color:#F4B400; font-weight:bold; font-size:18px;">Bomberos Voluntarios</span>
       </div>
       <div style="border:1px solid #eee; border-top:4px solid #C8102E; padding:24px;">
-        <h2 style="color:#C8102E; margin-top:0;">Número Bloqueado por Llamadas Falsas</h2>
-        <p>Se ha marcado un número como <strong>bloqueado</strong> en el sistema de registro de llamadas:</p>
+        <h2 style="color:#C8102E; margin-top:0;">Número Bloqueado por 48 Horas</h2>
+        <p>Un bombero registró un número como llamada falsa/broma y se solicitó su bloqueo:</p>
         <table style="width:100%; border-collapse: collapse;">
-          <tr><td style="padding:6px 0;"><strong>📞 Número:</strong></td><td>${data.numeroTelefono}</td></tr>
-          <tr><td style="padding:6px 0;"><strong>🚨 Total de reportes:</strong></td><td>${data.totalReportes}</td></tr>
-          <tr><td style="padding:6px 0;"><strong>📅 Fecha:</strong></td><td>${fecha}</td></tr>
+          <tr><td style="padding:6px 0; vertical-align:top;"><strong>📞 Número:</strong></td><td>${data.numeroTelefono}</td></tr>
+          <tr><td style="padding:6px 0; vertical-align:top;"><strong>📝 Razón:</strong></td><td>${data.razon}</td></tr>
+          <tr><td style="padding:6px 0; vertical-align:top;"><strong>👤 Reportado por:</strong></td><td>${data.reportadoPor}</td></tr>
+          <tr><td style="padding:6px 0; vertical-align:top;"><strong>📅 Fecha de bloqueo:</strong></td><td>${fechaBloqueo}</td></tr>
+          <tr><td style="padding:6px 0; vertical-align:top;"><strong>⏳ Bloqueado hasta:</strong></td><td>${fechaExpiracion}</td></tr>
         </table>
-        <p style="margin-top:16px;">Bloqueado por: <strong>${data.bloqueadoPor}</strong></p>
-        <p>Este número queda marcado internamente como reincidente en llamadas de broma o falsa alarma.</p>
+        <p style="margin-top:16px;">El bloqueo vence automáticamente 48 horas después de haberse registrado.</p>
       </div>
       <p style="text-align:center; color:#888; font-size:12px; margin-top:16px;">Sistema de Bomberos Voluntarios</p>
     </div>
@@ -98,7 +103,7 @@ export function notificarNumeroBloqueado(data: {
 
   enviarConReintentos({
     destinatarios: config.smtp.adminEmails,
-    asunto: '[ALERTA] Número Bloqueado por Llamadas Falsas',
+    asunto: `[Bomberos Voluntarios] Número bloqueado 48h: ${data.numeroTelefono}`,
     html,
   });
 }

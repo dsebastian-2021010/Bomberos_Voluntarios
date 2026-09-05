@@ -29,6 +29,22 @@ export const config = {
     adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map((e) => e.trim()).filter(Boolean),
   },
 
+  // Integración con la central de llamadas (sistema externo, aún por conectar).
+  // Mientras estas variables no estén todas definidas, el servicio queda
+  // deshabilitado y solo registra en el log lo que habría enviado.
+  // Ver backend/src/services/externalBlocklistService.ts
+  externalBlocklist: {
+    enabled: process.env.EXTERNAL_BLOCKLIST_ENABLED === 'true',
+    dbHost: process.env.EXTERNAL_DB_HOST || '',
+    dbPort: parseInt(process.env.EXTERNAL_DB_PORT || '0', 10),
+    dbUser: process.env.EXTERNAL_DB_USER || '',
+    dbPassword: process.env.EXTERNAL_DB_PASSWORD || '',
+    dbName: process.env.EXTERNAL_DB_NAME || '',
+    tabla: process.env.EXTERNAL_DB_TABLA || '',
+    columnaTelefono: process.env.EXTERNAL_DB_COLUMNA_TELEFONO || '',
+    columnaBloqueadoHasta: process.env.EXTERNAL_DB_COLUMNA_BLOQUEADO_HASTA || '',
+  },
+
   superadmin: {
     nombre: process.env.SUPERADMIN_NOMBRE || 'Administrador General',
     email: process.env.SUPERADMIN_EMAIL || 'superadmin@bomberos.local',

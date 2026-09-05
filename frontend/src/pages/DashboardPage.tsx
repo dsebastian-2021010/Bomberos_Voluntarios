@@ -1,27 +1,23 @@
 import { useEffect, useState, useCallback } from 'react';
-import RegistrarLlamada from '../components/RegistrarLlamada';
-import ListaNumerosReportados from '../components/ListaNumerosReportados';
-import HistorialModal from '../components/HistorialModal';
-import ConfirmModal from '../components/ConfirmModal';
+import BloquearNumero from '../components/BloquearNumero';
+import ListaBloqueos from '../components/ListaBloqueos';
 import Toast from '../components/Toast';
-import * as llamadasService from '../services/llamadas';
-import { NumeroReportado } from '../services/llamadas';
+import * as bloqueosService from '../services/bloqueos';
+import { NumeroBloqueado } from '../services/bloqueos';
 import { obtenerMensajeError } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 
 export default function DashboardPage() {
   const { usuario } = useAuth();
-  const [numeros, setNumeros] = useState<NumeroReportado[]>([]);
+  const [bloqueos, setBloqueos] = useState<NumeroBloqueado[]>([]);
   const [cargando, setCargando] = useState(true);
-  const [aBloquear, setABloquear] = useState<number | null>(null);
-  const [historialId, setHistorialId] = useState<number | null>(null);
   const [toast, setToast] = useState<{ mensaje: string; tipo: 'exito' | 'error' } | null>(null);
 
-  const cargarNumeros = useCallback(async () => {
+  const cargarBloqueos = useCallback(async () => {
     setCargando(true);
     try {
-      const data = await llamadasService.listarNumeros();
-      setNumeros(data);
+      const data = await bloqueosService.listarBloqueos();
+      setBloqueos(data);
     } catch (err) {
       setToast({ mensaje: obtenerMensajeError(err), tipo: 'error' });
     } finally {
@@ -30,31 +26,8 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    cargarNumeros();
-  }, [cargarNumeros]);
-
-  async function confirmarBloquear() {
-    if (aBloquear == null) return;
-    try {
-      await llamadasService.bloquearNumero(aBloquear);
-      setToast({ mensaje: 'Número bloqueado correctamente. Se notificó por correo.', tipo: 'exito' });
-      cargarNumeros();
-    } catch (err) {
-      setToast({ mensaje: obtenerMensajeError(err), tipo: 'error' });
-    } finally {
-      setABloquear(null);
-    }
-  }
-
-  async function handleDesbloquear(id: number) {
-    try {
-      await llamadasService.desbloquearNumero(id);
-      setToast({ mensaje: 'Número desbloqueado correctamente.', tipo: 'exito' });
-      cargarNumeros();
-    } catch (err) {
-      setToast({ mensaje: obtenerMensajeError(err), tipo: 'error' });
-    }
-  }
+    cargarBloqueos();
+  }, [cargarBloqueos]);
 
   return (
     <div className="space-y-6">
@@ -63,36 +36,17 @@ export default function DashboardPage() {
           Bienvenido, {usuario?.nombre?.split(' ')[0]}
         </h1>
         <p className="text-sm text-ink-400">
-          Registro y bloqueo de números que reportan llamadas falsas o de broma.
+          Registra un número reportado por llamada falsa o de broma para bloquearlo por 48 horas.
         </p>
       </div>
 
-      <RegistrarLlamada
-        onRegistrado={cargarNumeros}
+      <BloquearNumero
+        onRegistrado={cargarBloqueos}
         onExito={(m) => setToast({ mensaje: m, tipo: 'exito' })}
         onError={(m) => setToast({ mensaje: m, tipo: 'error' })}
       />
 
-      <ListaNumerosReportados
-        numeros={numeros}
-        cargando={cargando}
-        onBloquear={(id) => setABloquear(id)}
-        onDesbloquear={handleDesbloquear}
-        onVerHistorial={(id) => setHistorialId(id)}
-      />
-
-      {aBloquear != null && (
-        <ConfirmModal
-          titulo="Bloquear número"
-          mensaje="¿Estás seguro de que deseas bloquear este número? Quedará marcado como reincidente en llamadas falsas."
-          onConfirmar={confirmarBloquear}
-          onCancelar={() => setABloquear(null)}
-        />
-      )}
-
-      {historialId != null && (
-        <HistorialModal numeroId={historialId} onCerrar={() => setHistorialId(null)} />
-      )}
+      <ListaBloqueos bloqueos={bloqueos} cargando={cargando} />
 
       {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} onCerrar={() => setToast(null)} />}
     </div>
