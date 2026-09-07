@@ -21,7 +21,7 @@ async function seed() {
   }
 
   let generada = false;
-  if (!password || !validatePassword(password)) {
+  if (!password) {
     password = generateRandomPassword();
     generada = true;
   }
@@ -42,6 +42,9 @@ async function seed() {
     console.log('  ⚠️  Guarda esta contraseña, no se mostrará de nuevo. Cámbiala en tu primer login.');
   } else {
     console.log('  Contraseña: la definida en SUPERADMIN_PASSWORD (.env)');
+    if (!validatePassword(password)) {
+      console.log('  ⚠️  Esta contraseña NO cumple la política de seguridad (mayúscula/minúscula/número/especial). Úsala solo para pruebas.');
+    }
   }
 
   await pool.end();
