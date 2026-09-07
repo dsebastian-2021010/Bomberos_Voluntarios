@@ -6,14 +6,6 @@ interface ListaBloqueosProps {
   cargando: boolean;
 }
 
-function tiempoRestante(fechaExpiracion: string): string {
-  const ms = new Date(fechaExpiracion).getTime() - Date.now();
-  if (ms <= 0) return 'Expirado';
-  const horas = Math.floor(ms / (1000 * 60 * 60));
-  const minutos = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-  return `${horas}h ${minutos}m restantes`;
-}
-
 export default function ListaBloqueos({ bloqueos, cargando }: ListaBloqueosProps) {
   const [busqueda, setBusqueda] = useState('');
 
@@ -51,7 +43,6 @@ export default function ListaBloqueos({ bloqueos, cargando }: ListaBloqueosProps
                 <th className="py-2 pr-4">Razón</th>
                 <th className="py-2 pr-4">Reportado por</th>
                 <th className="py-2 pr-4">Estado</th>
-                <th className="py-2 pr-4">Sincronización</th>
               </tr>
             </thead>
             <tbody>
@@ -66,19 +57,7 @@ export default function ListaBloqueos({ bloqueos, cargando }: ListaBloqueosProps
                         b.vigente ? 'bg-brand-50 text-brand-700' : 'bg-ink-100 text-ink-500'
                       }`}
                     >
-                      {b.vigente ? tiempoRestante(b.fecha_expiracion) : 'Expirado'}
-                    </span>
-                  </td>
-                  <td className="py-2.5 pr-4">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        b.sincronizado_externo
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-gold-500/20 text-gold-600'
-                      }`}
-                      title={b.error_sincronizacion || undefined}
-                    >
-                      {b.sincronizado_externo ? 'Sincronizado' : 'Pendiente'}
+                      {b.vigente ? 'Bloqueado' : 'Expirado'}
                     </span>
                   </td>
                 </tr>
